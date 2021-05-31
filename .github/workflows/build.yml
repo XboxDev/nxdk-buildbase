@@ -10,10 +10,17 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Generate tags
-      id: tags
+    - name: Generate tags (buildbase)
+      id: tags-buildbase
       run: |
         DOCKER_IMAGE=xboxdev/nxdk-buildbase
+        TAGS="ghcr.io/${DOCKER_IMAGE}:latest"
+        TAGS="$TAGS,ghcr.io/${DOCKER_IMAGE}:git-${GITHUB_SHA::8}"
+        echo ::set-output name=tags::${TAGS}
+    - name: Generate tags (runbase)
+      id: tags-runbase
+      run: |
+        DOCKER_IMAGE=xboxdev/nxdk-runbase
         TAGS="ghcr.io/${DOCKER_IMAGE}:latest"
         TAGS="$TAGS,ghcr.io/${DOCKER_IMAGE}:git-${GITHUB_SHA::8}"
         echo ::set-output name=tags::${TAGS}
@@ -25,11 +32,21 @@ jobs:
         registry: ghcr.io
         username: ${{ secrets.GHCR_USERNAME }}
         password: ${{ secrets.GHCR_TOKEN }}
-    - name: Build and push
+    - name: Build and push (buildbase)
       uses: docker/build-push-action@v2
       with:
         context: .
         file: ./Dockerfile
         platforms: linux/amd64,linux/386
         push: true
-        tags: ${{ steps.tags.outputs.tags }}
+        target: buildbase
+        tags: ${{ steps.tags-buildbase.outputs.tags }}
+    - name: Build and push (runbase)
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile
+        platforms: linux/amd64,linux/386
+        push: true
+        target: runbase
+        tags: ${{ steps.tags-runbase.outputs.tags }}
