@@ -17,6 +17,8 @@ RUN GLIBC_VERSION="2.35-r1" && \
     curl -Lo glibc.apk "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk" && \
     apk add --force-overwrite glibc.apk && \
     apk del curl && \
-    rm -rf glibc.apk
+    rm -rf glibc.apk && \
+    mkdir -p /lib64 && \
+    ln -s /usr/glibc-compat/lib/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2
 
 LABEL org.opencontainers.image.source https://github.com/XboxDev/nxdk-buildbase
