@@ -1,12 +1,12 @@
-FROM alpine:3.18 AS buildbase
+FROM alpine:3.21 AS buildbase
 
 RUN apk add --update --no-cache clang llvm lld cmake make pkgconf
-RUN apk add --update --no-cache build-base flex bison
+RUN apk add --update --no-cache build-base flex bison cargo
 
 LABEL org.opencontainers.image.source https://github.com/XboxDev/nxdk-buildbase
 
 
-FROM alpine:3.18 AS runbase
+FROM alpine:3.21 AS runbase
 
 RUN apk add --update --no-cache clang llvm lld cmake make pkgconf
 
